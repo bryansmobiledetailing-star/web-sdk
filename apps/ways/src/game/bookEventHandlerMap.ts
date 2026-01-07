@@ -125,10 +125,9 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	updateCollectorCount: async (bookEvent: BookEventOfType<'updateCollectorCount'>) => {
 		if (bookEvent.collectorsThisSpin > 0) {
 			// Animate collector symbols
-			eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_gold_collect' });
 			await animateSymbols({ positions: bookEvent.positions });
 		}
-		// Update the collection bar
+		// Update the collection bar (sound is handled in CollectorBar component)
 		eventEmitter.broadcast({
 			type: 'collectorBarUpdate',
 			count: bookEvent.collectorCount,
@@ -137,7 +136,8 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	// Meta Vault: Symbol transformation event
 	symbolTransform: async (bookEvent: BookEventOfType<'symbolTransform'>) => {
-		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_transform' });
+		// Use multiplier up sound for transformations
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_up' });
 		eventEmitter.broadcast({
 			type: 'symbolTransformShow',
 			symbol: bookEvent.symbol,

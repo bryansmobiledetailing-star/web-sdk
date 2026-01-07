@@ -50,7 +50,8 @@
 		collectorBarReset: () => collectorCount.set(0, { duration: 0 }),
 		collectorBarUpdate: async (emitterEvent) => {
 			if (emitterEvent.collectorsThisSpin > 0) {
-				context.eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_gold_collect' });
+				// Use scatter_win sound for gold collection
+				context.eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win' });
 			}
 			collectorCount.set(emitterEvent.count, { duration: 300 });
 		},

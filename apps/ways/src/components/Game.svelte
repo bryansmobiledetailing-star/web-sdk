@@ -26,6 +26,9 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 	import I18nTest from './I18nTest.svelte';
+	import CollectorBar from './CollectorBar.svelte';
+	import GlobalMultiplier from './GlobalMultiplier.svelte';
+	import SymbolTransform from './SymbolTransform.svelte';
 
 	const context = getContext();
 
@@ -66,14 +69,20 @@
 			<Anticipations />
 		</MainContainer>
 
+		<!-- Meta Vault specific components -->
+		<MainContainer>
+			<CollectorBar />
+			<GlobalMultiplier />
+		</MainContainer>
+
 		<UI>
 			{#snippet gameName()}
-				<UiGameName name="WAYS GAME" />
+				<UiGameName name="META VAULT" />
 			{/snippet}
 			{#snippet logo()}
 				<Text
 					anchor={{ x: 1, y: 0 }}
-					text="ADD YOUR LOGO"
+					text="STAKE ENGINE"
 					style={{
 						fontFamily: 'proxima-nova',
 						fontSize: REM * 1.5,
@@ -91,6 +100,7 @@
 		{/if}
 		<FreeSpinOutro />
 		<Transition />
+		<SymbolTransform />
 
 		<I18nTest />
 	{/if}

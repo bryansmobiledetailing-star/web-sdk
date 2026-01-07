@@ -7,7 +7,6 @@ export type RawSymbol = {
 	multiplier?: number;
 	scatter?: boolean;
 	wild?: boolean;
-	collector?: boolean;
 };
 export type BetMode = keyof typeof config.betModes;
 export type GameType = keyof typeof config.paddingReels;

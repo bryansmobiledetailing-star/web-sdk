@@ -28,30 +28,15 @@ export default {
 		H2: 13, // Encryption Core → H1 at 13 collectors
 	},
 	symbols: {
-		// Wild symbols
+		// Wild symbol
 		W: {
 			paytable: null,
 			special_properties: ['wild'],
-		},
-		W2X: {
-			paytable: null,
-			special_properties: ['wild', 'multiplier'],
-			multiplier: 2,
-		},
-		W3X: {
-			paytable: null,
-			special_properties: ['wild', 'multiplier'],
-			multiplier: 3,
 		},
 		// Scatter symbol
 		S: {
 			paytable: null,
 			special_properties: ['scatter'],
-		},
-		// Collector/Gold symbol (free spins only)
-		G: {
-			paytable: null,
-			special_properties: ['collector'],
 		},
 		// H1 - The Architect/Vault (pays from 2-of-a-kind!)
 		H1: {
@@ -113,20 +98,6 @@ export default {
 				{ '5': 0.14 },
 				{ '4': 0.05 },
 				{ '3': 0.02 },
-			],
-		},
-		L5: {
-			paytable: [
-				{ '5': 0.14 },
-				{ '4': 0.05 },
-				{ '3': 0.02 },
-			],
-		},
-		L6: {
-			paytable: [
-				{ '5': 0.11 },
-				{ '4': 0.03 },
-				{ '3': 0.01 },
 			],
 		},
 	},

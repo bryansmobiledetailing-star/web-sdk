@@ -123,8 +123,13 @@ export function booksToTypeScript<TBookEvent extends BaseBookEvent>(
 }
 
 /**
- * Creates a map of event types to sample events from a book.
+ * Creates a map of event types to sample events from a single book.
  * Useful for creating events.ts files for storybook.
+ *
+ * Note: Only the first occurrence of each event type is kept. This is typically
+ * sufficient for storybook testing as it provides a representative sample of
+ * each event type's structure. For more diverse samples, use createEventsMapFromBooks.
+ *
  * @param book - The book to extract events from
  * @returns Object with event types as keys and sample events as values
  */
@@ -137,6 +142,28 @@ export function createEventsMap<TBookEvent extends BaseBookEvent>(
 		if (!eventsMap[event.type]) {
 			eventsMap[event.type] = event;
 		}
+	});
+	return eventsMap;
+}
+
+/**
+ * Creates a map of event types to sample events from multiple books.
+ * This provides a more comprehensive events map by looking across all books.
+ *
+ * @param books - Array of books to extract events from
+ * @returns Object with event types as keys and sample events as values
+ */
+export function createEventsMapFromBooks<TBookEvent extends BaseBookEvent>(
+	books: MathSdkBook<TBookEvent>[],
+): Record<string, TBookEvent> {
+	const eventsMap: Record<string, TBookEvent> = {};
+	books.forEach((book) => {
+		book.events.forEach((event) => {
+			// Only keep the first occurrence of each event type
+			if (!eventsMap[event.type]) {
+				eventsMap[event.type] = event;
+			}
+		});
 	});
 	return eventsMap;
 }

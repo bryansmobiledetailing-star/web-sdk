@@ -47,7 +47,11 @@ function parseArgs() {
 
 	// Try to infer mode from filename if not specified
 	const filename = basename(inputFile).toLowerCase();
-	if (filename.includes('bonus') || filename.includes('free')) {
+	if (
+		filename.includes('bonus') ||
+		filename.includes('freegame') ||
+		filename.includes('free_spin')
+	) {
 		mode = 'bonus';
 	}
 
@@ -72,29 +76,22 @@ function parseJsonl(content) {
 }
 
 /**
- * Create events map from books
+ * Create events map from books.
+ * Collects first occurrence of each event type to use as sample events in storybook.
+ * The index property is removed since storybook events don't need sequential indices.
  */
 function createEventsMap(books) {
 	const eventsMap = {};
 	for (const book of books) {
 		for (const event of book.events) {
 			if (!eventsMap[event.type]) {
-				// Remove index as it's not needed for storybook events
+				// Remove index as storybook events are tested individually, not in sequence
 				const { index, ...eventWithoutIndex } = event;
 				eventsMap[event.type] = eventWithoutIndex;
 			}
 		}
 	}
 	return eventsMap;
-}
-
-/**
- * Format object as TypeScript with proper indentation
- */
-function formatAsTypeScript(obj) {
-	return JSON.stringify(obj, null, '\t')
-		.replace(/"([^"]+)":/g, '$1:') // Remove quotes from property names
-		.replace(/: "([^"]+)"/g, ": '$1'"); // Use single quotes for string values
 }
 
 /**

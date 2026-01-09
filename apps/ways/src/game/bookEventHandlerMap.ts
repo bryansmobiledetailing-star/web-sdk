@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
-import { stateBet, stateUi } from 'state-shared';
+import { stateBet } from 'state-shared';
 import { sequence } from 'utils-shared/sequence';
 
 import { eventEmitter } from './eventEmitter';
@@ -83,73 +83,21 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'freeSpinIntroHide' });
 		eventEmitter.broadcast({ type: 'boardFrameGlowShow' });
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
-		stateUi.freeSpinCounterShow = true;
 		eventEmitter.broadcast({
 			type: 'freeSpinCounterUpdate',
 			current: undefined,
 			total: bookEvent.totalFs,
 		});
-		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
-		// Show gold collection bar for Meta Vault
-		eventEmitter.broadcast({ type: 'collectorBarShow' });
-		eventEmitter.broadcast({ type: 'collectorBarReset' });
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerButtonShow' });
 		eventEmitter.broadcast({ type: 'drawerFold' });
 	},
-	freeSpinRetrigger: async (bookEvent: BookEventOfType<'freeSpinRetrigger'>) => {
-		// animate scatters for retrigger
-		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
-		await animateSymbols({ positions: bookEvent.positions });
-		// show retrigger animation
-		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
-		eventEmitter.broadcast({
-			type: 'freeSpinCounterUpdate',
-			current: undefined,
-			total: bookEvent.totalFs,
-		});
-		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
-	},
 	updateFreeSpin: async (bookEvent: BookEventOfType<'updateFreeSpin'>) => {
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
-		stateUi.freeSpinCounterShow = true;
 		eventEmitter.broadcast({
 			type: 'freeSpinCounterUpdate',
-			current: bookEvent.amount + 1,
+			current: bookEvent.amount,
 			total: bookEvent.total,
-		});
-		stateUi.freeSpinCounterCurrent = bookEvent.amount + 1;
-		stateUi.freeSpinCounterTotal = bookEvent.total;
-	},
-	// Meta Vault: Gold/Collector collection event
-	updateCollectorCount: async (bookEvent: BookEventOfType<'updateCollectorCount'>) => {
-		if (bookEvent.collectorsThisSpin > 0) {
-			// Animate collector symbols
-			await animateSymbols({ positions: bookEvent.positions });
-		}
-		// Update the collection bar (sound is handled in CollectorBar component)
-		eventEmitter.broadcast({
-			type: 'collectorBarUpdate',
-			count: bookEvent.collectorCount,
-			collectorsThisSpin: bookEvent.collectorsThisSpin,
-		});
-	},
-	// Meta Vault: Symbol transformation event
-	symbolTransform: async (bookEvent: BookEventOfType<'symbolTransform'>) => {
-		// Use multiplier up sound for transformations
-		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_up' });
-		eventEmitter.broadcast({
-			type: 'symbolTransformShow',
-			symbol: bookEvent.symbol,
-			goldCount: bookEvent.goldCount,
-		});
-	},
-	// Global multiplier update (for wild multipliers)
-	updateGlobalMult: async (bookEvent: BookEventOfType<'updateGlobalMult'>) => {
-		eventEmitter.broadcast({ type: 'globalMultiplierShow' });
-		await eventEmitter.broadcastAsync({
-			type: 'globalMultiplierUpdate',
-			multiplier: bookEvent.globalMult,
 		});
 	},
 	freeSpinEnd: async (bookEvent: BookEventOfType<'freeSpinEnd'>) => {
@@ -158,8 +106,6 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
 		stateGame.gameType = 'basegame';
 		eventEmitter.broadcast({ type: 'boardFrameGlowHide' });
-		// Hide collection bar at end of free spins
-		eventEmitter.broadcast({ type: 'collectorBarHide' });
 		eventEmitter.broadcast({ type: 'freeSpinOutroShow' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_youwon_panel' });
 		winLevelSoundsPlay({ winLevelData });
@@ -171,7 +117,6 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		winLevelSoundsStop();
 		eventEmitter.broadcast({ type: 'freeSpinOutroHide' });
 		eventEmitter.broadcast({ type: 'freeSpinCounterHide' });
-		stateUi.freeSpinCounterShow = false;
 		await eventEmitter.broadcastAsync({ type: 'transition' });
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerUnfold' });
@@ -191,9 +136,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'winHide' });
 	},
 	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
-		// Reset collection bar
-		eventEmitter.broadcast({ type: 'collectorBarHide' });
-		eventEmitter.broadcast({ type: 'globalMultiplierHide' });
+		// Do nothing
 	},
 	// customised
 	createBonusSnapshot: async (bookEvent: BookEventOfType<'createBonusSnapshot'>) => {
@@ -209,12 +152,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const lastUpdateFreeSpinEvent = findLastBookEvent('updateFreeSpin' as const);
 		const lastSetTotalWinEvent = findLastBookEvent('setTotalWin' as const);
 		const lastUpdateGlobalMultEvent = findLastBookEvent('updateGlobalMult' as const);
-		const lastUpdateCollectorCountEvent = findLastBookEvent('updateCollectorCount' as const);
 
 		if (lastFreeSpinTriggerEvent) await playBookEvent(lastFreeSpinTriggerEvent, { bookEvents });
 		if (lastUpdateFreeSpinEvent) playBookEvent(lastUpdateFreeSpinEvent, { bookEvents });
 		if (lastSetTotalWinEvent) playBookEvent(lastSetTotalWinEvent, { bookEvents });
 		if (lastUpdateGlobalMultEvent) playBookEvent(lastUpdateGlobalMultEvent, { bookEvents });
-		if (lastUpdateCollectorCountEvent) playBookEvent(lastUpdateCollectorCountEvent, { bookEvents });
 	},
 };

@@ -31,13 +31,6 @@ type BookEventFreeSpinTrigger = {
 	positions: Position[];
 };
 
-type BookEventFreeSpinRetrigger = {
-	index: number;
-	type: 'freeSpinRetrigger';
-	totalFs: number;
-	positions: Position[];
-};
-
 type BookEventUpdateFreeSpin = {
 	index: number;
 	type: 'updateFreeSpin';
@@ -78,28 +71,6 @@ type BookEventWinInfo = {
 	}[];
 };
 
-// Meta Vault specific events
-type BookEventUpdateCollectorCount = {
-	index: number;
-	type: 'updateCollectorCount';
-	collectorCount: number;
-	collectorsThisSpin: number;
-	positions: Position[];
-};
-
-type BookEventSymbolTransform = {
-	index: number;
-	type: 'symbolTransform';
-	symbol: SymbolName;
-	goldCount: number;
-};
-
-type BookEventUpdateGlobalMult = {
-	index: number;
-	type: 'updateGlobalMult';
-	globalMult: number;
-};
-
 // customised
 type BookEventCreateBonusSnapshot = {
 	index: number;
@@ -112,16 +83,11 @@ export type BookEvent =
 	| BookEventWinInfo
 	| BookEventSetTotalWin
 	| BookEventFreeSpinTrigger
-	| BookEventFreeSpinRetrigger
 	| BookEventUpdateFreeSpin
 	| BookEventCreateBonusSnapshot
 	| BookEventFinalWin
 	| BookEventSetWin
 	| BookEventFreeSpinEnd
-	// Meta Vault specific
-	| BookEventUpdateCollectorCount
-	| BookEventSymbolTransform
-	| BookEventUpdateGlobalMult
 	// customised
 	| BookEventCreateBonusSnapshot;
 

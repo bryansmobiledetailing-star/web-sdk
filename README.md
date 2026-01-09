@@ -35,6 +35,7 @@ This is a web sdk that is convenient for you to develop a game in a declarative 
   - [ContextApp](#contextApp)
 - [UI](#ui)
 - [Internationalisation](#internationalisation)
+- [Math SDK Integration](#mathSdkIntegration)
 
 <a name="getStarted"></a>
 
@@ -1106,3 +1107,97 @@ For the branding purpose, we recommend you to regard them as just an example of 
 # Internationalisation ([i18n](http://www.i18nguy.com/origini18n.html))
 
 To be continued.
+
+<a name="mathSdkIntegration"></a>
+
+# Math SDK Integration
+
+The Web SDK is designed to work seamlessly with the [Math SDK](https://github.com/bryansmobiledetailing-star/math-sdk). The Math SDK is a Python-based engine that generates game rules, simulates outcomes, and produces book files that the Web SDK consumes.
+
+## How It Works
+
+1. **Math SDK** generates `.jsonl` book files containing game events (e.g., `reveal`, `winInfo`, `freeSpinTrigger`)
+2. **Web SDK** processes these events through the `bookEventHandlerMap` to create the game experience
+3. In **production**, the RGS (Remote Game Server) serves the book data
+4. In **development/storybook**, mock book data is used for testing
+
+## Converting Math SDK Books
+
+Use the conversion script to import Math SDK books into the Web SDK:
+
+```bash
+node scripts/convert-math-sdk-books.js <input.jsonl> <output-dir> [--mode base|bonus]
+```
+
+### Example
+
+```bash
+# Convert base game books
+node scripts/convert-math-sdk-books.js \
+  ../math-sdk/games/0_0_lines/library/books/books_base.jsonl \
+  apps/lines/src/stories/data \
+  --mode base
+
+# Convert bonus game books
+node scripts/convert-math-sdk-books.js \
+  ../math-sdk/games/0_0_lines/library/books/books_bonus.jsonl \
+  apps/lines/src/stories/data \
+  --mode bonus
+```
+
+This generates two files:
+- `base_books.ts` / `bonus_books.ts` - Array of books for random story testing
+- `base_events.ts` / `bonus_events.ts` - Sample events for individual event testing
+
+## Programmatic Usage
+
+You can also use the utilities directly in your code:
+
+```typescript
+import { 
+  parseJsonlContent, 
+  createEventsMap, 
+  booksToTypeScript 
+} from 'utils-book';
+
+// Parse JSONL content
+const books = parseJsonlContent(jsonlContent);
+
+// Create events map for storybook
+const eventsMap = createEventsMap(books[0]);
+
+// Convert to TypeScript
+const tsCode = booksToTypeScript(books);
+```
+
+## Supported Event Types
+
+The Web SDK supports all standard Math SDK event types:
+
+| Event Type | Description | Games |
+|------------|-------------|-------|
+| `reveal` | Initial board display | All |
+| `winInfo` | Win information with positions | All |
+| `setTotalWin` | Cumulative win amount | All |
+| `setWin` | Single spin win amount | All |
+| `finalWin` | Final payout multiplier | All |
+| `freeSpinTrigger` | Free spin feature trigger | All |
+| `freeSpinRetrigger` | Free spin retrigger | Cluster, Ways |
+| `updateFreeSpin` | Free spin counter update | All |
+| `freeSpinEnd` | End of free spin feature | All |
+| `tumbleBoard` | Tumble/cascade mechanic | Cluster |
+| `updateTumbleWin` | Tumble win update | Cluster |
+| `updateGlobalMult` | Global multiplier update | Cluster |
+| `enterBonus` | Bonus feature entry | Various |
+| `wincap` | Maximum win reached | All |
+
+## Adding New Event Types
+
+When the Math SDK introduces new event types:
+
+1. Add the type definition in `apps/<game>/src/game/typesBookEvent.ts`
+2. Add the handler in `apps/<game>/src/game/bookEventHandlerMap.ts`
+3. Create emitter events in the relevant components
+4. Add storybook tests in `apps/<game>/src/stories/`
+
+See [Steps to Add a New BookEvent](#steps) for detailed instructions.

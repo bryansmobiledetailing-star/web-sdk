@@ -24,6 +24,9 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 		{
 			name: 'L4',
 		},
+		{
+			name: 'L3',
+		},
 	],
 	[
 		{
@@ -41,6 +44,9 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 		{
 			name: 'H3',
 		},
+		{
+			name: 'L2',
+		},
 	],
 	[
 		{
@@ -58,6 +64,9 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 		{
 			name: 'H2',
 		},
+		{
+			name: 'L1',
+		},
 	],
 	[
 		{
@@ -70,10 +79,13 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'H2',
 		},
 		{
-			name: 'H5',
+			name: 'H4',
 		},
 		{
-			name: 'H5',
+			name: 'H4',
+		},
+		{
+			name: 'L4',
 		},
 	],
 	[
@@ -91,6 +103,9 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 		},
 		{
 			name: 'L2',
+		},
+		{
+			name: 'H3',
 		},
 	],
 ];
@@ -121,7 +136,7 @@ export const PORTRAIT_MAIN_SIZES = {
 	height: PORTRAIT_HEIGHT,
 };
 
-export const HIGH_SYMBOLS = ['H1', 'H2', 'H3', 'H4', 'H5'];
+export const HIGH_SYMBOLS = ['H1', 'H2', 'H3', 'H4'];
 
 export const INITIAL_SYMBOL_STATE: SymbolState = 'static';
 

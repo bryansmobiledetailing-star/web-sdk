@@ -68,12 +68,12 @@
 
 		<UI>
 			{#snippet gameName()}
-				<UiGameName name="WAYS GAME" />
+				<UiGameName name="META VAULT" />
 			{/snippet}
 			{#snippet logo()}
 				<Text
 					anchor={{ x: 1, y: 0 }}
-					text="ADD YOUR LOGO"
+					text="STAKE ENGINE"
 					style={{
 						fontFamily: 'proxima-nova',
 						fontSize: REM * 1.5,
